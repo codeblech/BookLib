@@ -4,7 +4,7 @@
 import argparse
 import json
 import re
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
 import yaml
@@ -153,7 +153,12 @@ def generate(vault_path: str, output_path: str, site_title: str = "Bookshelf") -
     # Default sort by title
     books.sort(key=lambda b: b["title"].lower())
 
-    books_json = json.dumps(books, ensure_ascii=False)
+    def _json_default(obj):
+        if isinstance(obj, (datetime, date)):
+            return obj.isoformat()
+        raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
+
+    books_json = json.dumps(books, ensure_ascii=False, default=_json_default)
     generated = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     html = (
