@@ -1,5 +1,5 @@
 :9090 {
-    root * /data/data/com.termux/files/home/obsidian/BookLib/site
+    root * /data/data/com.termux/files/home/obsidian/BookLib/BookLib/site
     encode gzip zstd
     file_server
 }
