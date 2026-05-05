@@ -220,26 +220,6 @@ main { padding: 28px 32px 80px; }
 .cover-placeholder .ph-title { font-family:var(--serif); font-size:11px; color:var(--text-muted); line-height:1.4; font-style:italic; }
 .cover-placeholder .ph-icon { font-size:20px; opacity:.25; }
 
-.status-dot {
-  position:absolute; bottom:7px; right:7px;
-  width:7px; height:7px; border-radius:50%;
-  border:1.5px solid var(--bg); z-index:3;
-}
-.status-dot.read    { background:var(--green); }
-.status-dot.reading { background:var(--blue); }
-.status-dot.want    { background:var(--yellow); }
-
-/* Small link indicator */
-.cover-wrap.has-links::after {
-  content: "read";
-  position:absolute; top:7px; right:7px; z-index:3;
-  font-size:8.5px; letter-spacing:.5px;
-  color:var(--green); background:rgba(0,0,0,0.65);
-  border:1px solid rgba(76,175,114,0.3);
-  border-radius:3px; padding:2px 5px;
-  font-family:var(--mono); line-height:1.3;
-}
-
 .card-info { padding:0 2px; }
 .card-title {
   font-family:var(--serif); font-size:12px; font-weight:700;
@@ -249,7 +229,7 @@ main { padding: 28px 32px 80px; }
 .card-authors { color:var(--accent); font-size:11px; margin-bottom:3px;
   display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
 .card-meta { color:var(--text-dim); font-size:10.5px; margin-bottom:3px; }
-.rating-stars { color:var(--yellow); font-size:9.5px; margin-top:2px; letter-spacing:1px; }
+.rating-stars { color:var(--text-muted); font-size:10px; margin-top:2px; }
 
 /* ── EMPTY ── */
 #empty { display:none; text-align:center; padding:100px 20px; color:var(--text-muted); }
@@ -380,6 +360,7 @@ main { padding: 28px 32px 80px; }
 }
 .meta-k { color:var(--text-dim); font-size:11px; white-space:nowrap; padding-top:1px; }
 .meta-v { color:var(--text); font-size:12px; }
+.meta-link { color:var(--accent); font-size:12px; word-break:break-all; }
 
 /* Status badge */
 .sbadge {
@@ -391,8 +372,6 @@ main { padding: 28px 32px 80px; }
 .sbadge.want    { background:rgba(212,168,83,0.1); color:var(--yellow);border:1px solid rgba(212,168,83,0.22); }
 .sbadge::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; flex-shrink:0; }
 
-/* Stars */
-.dstars { color:var(--yellow); font-size:15px; letter-spacing:2px; }
 .dscore { font-size:11px; color:var(--text-dim); }
 
 /* Genre tags */
@@ -596,28 +575,17 @@ function coverInner(b) {
   return `<div class="cover-placeholder"><span class="ph-icon">📖</span><span class="ph-title">${esc(b.title)}</span></div>`;
 }
 
-function statusDot(status) {
-  if (!status) return '';
-  const s = status.toLowerCase().replace(/[\s_]+/g,'-');
-  if (s==='read')         return '<span class="status-dot read"    title="Read"></span>';
-  if (s==='reading')      return '<span class="status-dot reading" title="Currently Reading"></span>';
-  if (s==='want-to-read') return '<span class="status-dot want"    title="Want to Read"></span>';
-  return '';
-}
-
 function starsSmall(scoreGr, rating) {
   const n = parseFloat(scoreGr||rating);
   if (isNaN(n)) return '';
-  const full=Math.floor(n), half=n%1>=0.5;
-  return `<div class="rating-stars" title="Rating ${n}">${'★'.repeat(full)}${half?'½':''}</div>`;
+  return `<div class="rating-stars">${n} / 5</div>`;
 }
 
 function cardHTML(b, i) {
   const meta = [b.year, b.pages?b.pages+' pp':''].filter(Boolean).join(' · ');
-  const hasLinks = b.telegram && b.telegram.length>0;
   return `<div class="card" data-id="${esc(b.id)}" style="animation-delay:${Math.min(i*11,280)}ms">
-    <div class="cover-wrap${hasLinks?' has-links':''}">
-      ${coverInner(b)}${statusDot(b.status)}
+    <div class="cover-wrap">
+      ${coverInner(b)}
     </div>
     <div class="card-info">
       <div class="card-title">${esc(b.title)}</div>
@@ -655,8 +623,9 @@ function openDetail(id) {
     b.year    ? ['Year',      `<span class="meta-v">${esc(b.year)}</span>`]                           : null,
     b.pages   ? ['Pages',     `<span class="meta-v">${esc(b.pages)} pages</span>`]                    : null,
     b.status  ? ['Status',    `<span class="sbadge ${sClass}">${esc(b.status)}</span>`]               : null,
-    b.scoreGr ? ['Goodreads', `<span class="dstars">${stars(b.scoreGr)}</span> <span class="dscore">${esc(b.scoreGr)} / 5</span>`] : null,
-    b.rating  ? ['My rating', `<span class="dstars">${stars(b.rating)}</span> <span class="dscore">${esc(b.rating)}</span>`]       : null,
+    b.scoreGr ? ['Goodreads', `<span class="dscore">${esc(b.scoreGr)} / 5</span>`] : null,
+    b.rating  ? ['My rating', `<span class="dscore">${esc(b.rating)} / 5</span>`]       : null,
+    b.urlGr   ? ['Goodreads', `<a class="meta-link" href="${esc(b.urlGr)}" target="_blank" rel="noopener">${esc(b.urlGr)}</a>`] : null,
   ].filter(Boolean);
 
   const metaHTML = metaRows.length ? `
@@ -674,7 +643,7 @@ function openDetail(id) {
     </div>` : '';
 
   // Extra unknown properties
-  const knownKeys = new Set(['id','title','authors','genre','pages','year','scoreGr','rating','cover','status','description','telegram']);
+  const knownKeys = new Set(['id','title','authors','genre','pages','year','scoreGr','rating','cover','status','description','telegram','urlGr']);
   const extras = Object.entries(b).filter(([k]) => !knownKeys.has(k) && b[k]!=null && b[k]!=='' && !(Array.isArray(b[k])&&!b[k].length));
   const extraHTML = extras.length ? `
     <div class="extra-props">
@@ -707,12 +676,6 @@ function openDetail(id) {
 function closeDetail() {
   document.getElementById('detail-overlay').classList.remove('open');
   document.body.style.overflow = '';
-}
-
-function stars(val) {
-  const n = parseFloat(val);
-  if (isNaN(n)) return '';
-  return '★'.repeat(Math.floor(n)) + (n%1>=0.5?'½':'');
 }
 
 function linkIcon(url) {
