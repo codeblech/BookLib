@@ -25,8 +25,8 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   --green-dim:  rgba(76,175,114,0.1);
   --blue:       #5b9bd5;
   --yellow:     #d4a853;
-  --card-w:     148px;
-  --img-h:      215px;
+  --card-w:     175px;
+  --img-h:      255px;
   --radius:     5px;
   --mono:       'DM Mono', monospace;
   --serif:      'Libre Baskerville', Georgia, serif;
@@ -39,9 +39,9 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 15px;
   min-height: 100vh;
-  line-height: 1.5;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -70,16 +70,14 @@ header {
 
 h1 {
   font-family: var(--serif);
-  font-size: 23px;
+  font-size: 26px;
   font-weight: 700;
   color: var(--accent);
   letter-spacing: -0.4px;
 }
 
 .count-badge {
-  font-size: 10.5px;
-  color: var(--text-muted);
-  background: var(--bg3);
+  font-size: 12px;
   border: 1px solid var(--border);
   border-radius: 999px;
   padding: 2px 9px;
@@ -117,7 +115,7 @@ h1 {
   border-radius: var(--radius);
   color: var(--text);
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 14px;
   outline: none;
   transition: border-color .15s, box-shadow .15s;
 }
@@ -130,8 +128,8 @@ select, .btn {
   border-radius: var(--radius);
   color: var(--text);
   font-family: var(--mono);
-  font-size: 12px;
-  padding: 7px 10px;
+  font-size: 14px;
+  padding: 8px 12px;
   cursor: pointer;
   outline: none;
   transition: border-color .15s, background .15s;
@@ -150,12 +148,12 @@ select:focus, .btn:hover { border-color: var(--border2); background: var(--bg4);
   transform: translateY(-50%);
   color: var(--text-dim);
   pointer-events: none;
-  font-size: 9px;
+  font-size: 11px;
 }
 .select-wrap select { padding-right: 22px; }
 
-.divider { width: 1px; height: 18px; background: var(--border); margin: 0 2px; flex-shrink: 0; }
-.btn-clear { color: var(--text-muted); font-size: 11.5px; }
+.divider { width: 1px; height: 22px; background: var(--border); margin: 0 2px; flex-shrink: 0; }
+.btn-clear { color: var(--text-muted); font-size: 13px; }
 
 /* ── MAIN GRID ── */
 main { padding: 28px 32px 80px; }
@@ -164,6 +162,7 @@ main { padding: 28px 32px 80px; }
   display: grid;
   grid-template-columns: repeat(auto-fill, var(--card-w));
   gap: 28px 20px;
+  justify-content: center;
 }
 
 /* ── CARD ── */
@@ -217,24 +216,24 @@ main { padding: 28px 32px 80px; }
   background: linear-gradient(145deg, var(--bg3) 0%, var(--bg4) 100%);
   position:relative; z-index:1;
 }
-.cover-placeholder .ph-title { font-family:var(--serif); font-size:11px; color:var(--text-muted); line-height:1.4; font-style:italic; }
-.cover-placeholder .ph-icon { font-size:20px; opacity:.25; }
+.cover-placeholder .ph-title { font-family:var(--serif); font-size:13px; color:var(--text-muted); line-height:1.4; font-style:italic; }
+.cover-placeholder .ph-icon { font-size:24px; opacity:.25; }
 
 .card-info { padding:0 2px; }
 .card-title {
-  font-family:var(--serif); font-size:12px; font-weight:700;
-  color:var(--text); line-height:1.35; margin-bottom:4px;
+  font-family:var(--serif); font-size:14px; font-weight:700;
+  color:var(--text); line-height:1.35; margin-bottom:5px;
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
 }
-.card-authors { color:var(--accent); font-size:11px; margin-bottom:3px;
+.card-authors { color:var(--accent); font-size:13px; margin-bottom:4px;
   display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
-.card-meta { color:var(--text-dim); font-size:10.5px; margin-bottom:3px; }
-.rating-stars { color:var(--text-muted); font-size:10px; margin-top:2px; }
+.card-meta { color:var(--text-dim); font-size:12px; margin-bottom:4px; }
+.rating-stars { color:var(--text-muted); font-size:12px; margin-top:3px; }
 
 /* ── EMPTY ── */
 #empty { display:none; text-align:center; padding:100px 20px; color:var(--text-muted); }
-#empty .big { font-size:38px; margin-bottom:14px; opacity:.3; }
-#empty p { font-size:13px; }
+#empty .big { font-size:48px; margin-bottom:14px; opacity:.3; }
+#empty p { font-size:15px; }
 
 /* ── FULL-SCREEN DETAIL ── */
 #detail-overlay {
@@ -259,15 +258,15 @@ main { padding: 28px 32px 80px; }
   display:inline-flex; align-items:center; gap:7px;
   background:var(--bg3); border:1px solid var(--border);
   border-radius:var(--radius);
-  color:var(--text-muted); font-family:var(--mono); font-size:12px;
-  padding:6px 13px; cursor:pointer;
+  color:var(--text-muted); font-family:var(--mono); font-size:14px;
+  padding:8px 15px; cursor:pointer;
   transition:color .12s, border-color .12s, background .12s;
   flex-shrink:0;
 }
 .back-btn:hover { color:var(--text); border-color:var(--border2); background:var(--bg4); }
 
 .detail-nav-title {
-  font-family:var(--serif); font-size:13px; color:var(--text-muted);
+  font-family:var(--serif); font-size:15px; color:var(--text-muted);
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 
@@ -280,15 +279,15 @@ main { padding: 28px 32px 80px; }
 
 .detail-hero {
   display: grid;
-  grid-template-columns: 190px 1fr;
-  gap: 40px;
+  grid-template-columns: 220px 1fr;
+  gap: 44px;
   margin-bottom: 44px;
   align-items: start;
 }
 
 /* Large cover */
 .detail-cover {
-  width:190px; height:278px;
+  width:220px; height:320px;
   border-radius:2px 7px 7px 2px;
   overflow:hidden;
   background:var(--bg3);
@@ -316,20 +315,20 @@ main { padding: 28px 32px 80px; }
 
 .detail-title {
   font-family:var(--serif);
-  font-size:26px; font-weight:700;
+  font-size:30px; font-weight:700;
   line-height:1.25; color:var(--text);
   margin-bottom:8px; letter-spacing:-0.3px;
 }
 
 .detail-authors {
-  color:var(--accent); font-size:14px; margin-bottom:22px;
+  color:var(--accent); font-size:16px; margin-bottom:22px;
 }
 
 /* ── READING LINKS — most important ── */
 .reading-links { margin-bottom:22px; }
 
 .section-label {
-  font-size:9.5px; text-transform:uppercase; letter-spacing:1.4px;
+  font-size:11px; text-transform:uppercase; letter-spacing:1.4px;
   color:var(--text-dim); margin-bottom:9px; font-family:var(--mono);
 }
 
@@ -339,7 +338,7 @@ main { padding: 28px 32px 80px; }
   background:var(--green-dim);
   border:1px solid rgba(76,175,114,0.2);
   border-radius:var(--radius);
-  color:var(--green); font-family:var(--mono); font-size:12px;
+  color:var(--green); font-family:var(--mono); font-size:14px;
   text-decoration:none; margin-bottom:6px;
   transition:background .14s, border-color .14s, transform .12s;
   word-break:break-all;
@@ -349,7 +348,7 @@ main { padding: 28px 32px 80px; }
   border-color:rgba(76,175,114,0.4);
   transform:translateX(3px);
 }
-.read-link-icon { font-size:14px; flex-shrink:0; }
+.read-link-icon { font-size:16px; flex-shrink:0; }
 .read-link-text { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .read-link-arrow { flex-shrink:0; opacity:.55; }
 
@@ -358,28 +357,28 @@ main { padding: 28px 32px 80px; }
   display:grid; grid-template-columns:auto 1fr;
   gap:7px 20px; margin-bottom:18px;
 }
-.meta-k { color:var(--text-dim); font-size:11px; white-space:nowrap; padding-top:1px; }
-.meta-v { color:var(--text); font-size:12px; }
-.meta-link { color:var(--accent); font-size:12px; word-break:break-all; }
+.meta-k { color:var(--text-dim); font-size:13px; white-space:nowrap; padding-top:1px; }
+.meta-v { color:var(--text); font-size:14px; }
+.meta-link { color:var(--accent); font-size:14px; word-break:break-all; }
 
 /* Status badge */
 .sbadge {
   display:inline-flex; align-items:center; gap:5px;
-  padding:2px 9px 2px 6px; border-radius:999px; font-size:11px;
+  padding:3px 10px 3px 7px; border-radius:999px; font-size:12px;
 }
 .sbadge.read    { background:rgba(76,175,114,0.1); color:var(--green); border:1px solid rgba(76,175,114,0.22); }
 .sbadge.reading { background:rgba(91,155,213,0.1); color:var(--blue);  border:1px solid rgba(91,155,213,0.22); }
 .sbadge.want    { background:rgba(212,168,83,0.1); color:var(--yellow);border:1px solid rgba(212,168,83,0.22); }
-.sbadge::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; flex-shrink:0; }
+.sbadge::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
 
-.dscore { font-size:11px; color:var(--text-dim); }
+.dscore { font-size:13px; color:var(--text-dim); }
 
 /* Genre tags */
 .gtags { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:18px; }
 .gtag {
   background:var(--bg4); border:1px solid var(--border);
-  border-radius:3px; padding:3px 8px;
-  font-size:10.5px; color:var(--text-muted);
+  border-radius:3px; padding:4px 9px;
+  font-size:12px; color:var(--text-muted);
 }
 
 /* Description */
@@ -388,38 +387,38 @@ main { padding: 28px 32px 80px; }
   padding-top:28px; margin-top:4px;
 }
 .detail-desc {
-  font-size:14px; line-height:1.82; color:var(--text-muted);
+  font-size:16px; line-height:1.82; color:var(--text-muted);
   font-family:var(--serif); font-style:italic;
   white-space:pre-wrap;
 }
 
 /* Extra props */
 .extra-props { border-top:1px solid var(--border); padding-top:22px; margin-top:28px; }
-.props-table { width:100%; border-collapse:collapse; font-size:11.5px; }
+.props-table { width:100%; border-collapse:collapse; font-size:13px; }
 .props-table td { padding:6px 0; border-bottom:1px solid var(--border); vertical-align:top; }
 .props-table td:first-child { color:var(--text-dim); white-space:nowrap; padding-right:22px; width:1%; }
 .props-table td:last-child { color:var(--text); word-break:break-word; }
 
 /* Footer stamp */
-.updated { position:fixed; bottom:14px; right:18px; font-size:9.5px; color:var(--text-dim); pointer-events:none; }
+.updated { position:fixed; bottom:14px; right:18px; font-size:11px; color:var(--text-dim); pointer-events:none; }
 
 /* ── RESPONSIVE — TABLET ── */
 @media (max-width:780px) {
-  :root { --card-w:138px; --img-h:198px; }
+  :root { --card-w:160px; --img-h:232px; }
   header { padding:16px 20px 0; }
   main { padding:22px 20px 80px; }
   #grid { gap:22px 14px; }
   .detail-content { padding:32px 22px 80px; }
-  .detail-hero { grid-template-columns:160px 1fr; gap:28px; }
-  .detail-cover { width:160px; height:234px; }
-  .detail-title { font-size:22px; }
+  .detail-hero { grid-template-columns:180px 1fr; gap:28px; }
+  .detail-cover { width:180px; height:262px; }
+  .detail-title { font-size:24px; }
 }
 
 /* ── RESPONSIVE — MOBILE ── */
 @media (max-width:520px) {
-  :root { --card-w:128px; --img-h:182px; }
+  :root { --card-w:145px; --img-h:210px; }
   header { padding:12px 14px 0; }
-  h1 { font-size:19px; }
+  h1 { font-size:21px; }
   main { padding:16px 14px 80px; }
   #grid { gap:18px 10px; }
   .search-wrap { min-width:100%; max-width:100%; }
@@ -429,10 +428,10 @@ main { padding: 28px 32px 80px; }
 
   /* Stack hero on mobile */
   .detail-hero { grid-template-columns:1fr; gap:22px; }
-  .detail-cover { width:148px; height:216px; margin:0 auto; }
+  .detail-cover { width:170px; height:248px; margin:0 auto; }
   .detail-info { align-items:center; text-align:center; }
-  .detail-title { font-size:20px; }
-  .detail-authors { font-size:13px; }
+  .detail-title { font-size:22px; }
+  .detail-authors { font-size:15px; }
   .reading-links { width:100%; }
   .reading-links-label, .section-label { text-align:left; width:100%; }
   .gtags { justify-content:center; }
@@ -449,7 +448,7 @@ main { padding: 28px 32px 80px; }
   </div>
   <div class="toolbar">
     <div class="search-wrap">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input id="search" type="text" placeholder="Search…" autocomplete="off">
     </div>
     <div class="select-wrap">
@@ -493,7 +492,7 @@ main { padding: 28px 32px 80px; }
 <div id="detail-overlay">
   <div class="detail-nav">
     <button class="back-btn" onclick="closeDetail()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M19 12H5"/><path d="m12 5-7 7 7 7"/></svg>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M19 12H5"/><path d="m12 5-7 7 7 7"/></svg>
       Back
     </button>
     <div class="detail-nav-title" id="detailNavTitle"></div>
