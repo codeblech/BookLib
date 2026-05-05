@@ -3,7 +3,7 @@ set -euo pipefail
 
 VAULT="$HOME/obsidian/obsidian"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-SITE_DIR="$HOME/obsidian/BookLib/site"
+SITE_DIR="$HOME/obsidian/BookLib/BookLib/site"
 
 echo "[1/2] Generating site..."
 mkdir -p "$SITE_DIR"
