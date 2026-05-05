@@ -168,23 +168,56 @@ main { padding: 24px 32px; }
 .card {
   width: var(--card-w);
   cursor: pointer;
-  transition: transform .15s;
   animation: fadeIn .2s ease both;
 }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
 
-.card:hover { transform: translateY(-2px); }
-.card:hover .cover-img { box-shadow: 0 12px 32px rgba(0,0,0,.6); }
-
+/* ── HARDCOVER BOOK EFFECT ── */
 .cover-wrap {
   width: var(--card-w);
   height: var(--img-h);
-  border-radius: 3px;
+  border-radius: 2px 6px 6px 2px;
   overflow: hidden;
   background: var(--bg3);
   border: 1px solid var(--border);
   position: relative;
   margin-bottom: 9px;
+  transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+  box-shadow:
+    inset 1px 1px 0 1px rgba(255,255,255,0.2),
+    inset 0 0 0 1px rgba(0,0,0,0.1),
+    -4px 2px 4px 0 rgba(0,0,0,0.3),
+    -8px 8px 20px 0 rgba(0,0,0,0.2);
+}
+
+/* Book spine effect */
+.cover-wrap::before {
+  content: "";
+  background-image: linear-gradient(
+    to right,
+    rgba(0,0,0,0.2),
+    rgba(255,255,255,0.3) 1%,
+    transparent 6%,
+    rgba(0,0,0,0.15) 8%,
+    rgba(255,255,255,0.2) 9%,
+    transparent 20%
+  );
+  width: 100%;
+  position: absolute;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.card:hover .cover-wrap {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow:
+    inset 1px 1px 0 1px rgba(255,255,255,0.2),
+    inset 0 0 0 1px rgba(0,0,0,0.1),
+    -4px 4px 8px 0 rgba(0,0,0,0.3),
+    -12px 16px 30px 0 rgba(0,0,0,0.3);
 }
 
 .cover-img {
@@ -192,7 +225,6 @@ main { padding: 24px 32px; }
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: box-shadow .15s;
 }
 
 .cover-placeholder {
@@ -229,6 +261,7 @@ main { padding: 24px 32px; }
   height: 8px;
   border-radius: 50%;
   border: 1.5px solid var(--bg);
+  z-index: 3;
 }
 .status-dot.read     { background: var(--green); }
 .status-dot.reading  { background: var(--blue); }
@@ -319,13 +352,38 @@ main { padding: 24px 32px; }
   flex-shrink: 0;
   width: 120px;
   height: 175px;
-  border-radius: 3px;
+  border-radius: 2px 6px 6px 2px;
   overflow: hidden;
   border: 1px solid var(--border);
   background: var(--bg3);
+  position: relative;
+  box-shadow:
+    inset 1px 1px 0 1px rgba(255,255,255,0.2),
+    inset 0 0 0 1px rgba(0,0,0,0.1),
+    -4px 2px 4px 0 rgba(0,0,0,0.3),
+    -8px 8px 20px 0 rgba(0,0,0,0.2);
 }
-.modal-cover img { width: 100%; height: 100%; object-fit: cover; }
-.modal-cover .cover-placeholder { height: 100%; }
+.modal-cover::before {
+  content: "";
+  background-image: linear-gradient(
+    to right,
+    rgba(0,0,0,0.2),
+    rgba(255,255,255,0.3) 1%,
+    transparent 6%,
+    rgba(0,0,0,0.15) 8%,
+    rgba(255,255,255,0.2) 9%,
+    transparent 20%
+  );
+  width: 100%;
+  position: absolute;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.modal-cover img { width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 1; }
+.modal-cover .cover-placeholder { height: 100%; position: relative; z-index: 1; }
 
 .modal-body { flex: 1; min-width: 0; }
 
@@ -428,7 +486,7 @@ main { padding: 24px 32px; }
         <option value="year-desc">Sort: Year ↓</option>
         <option value="year-asc">Sort: Year ↑</option>
         <option value="pages-desc">Sort: Pages ↓</option>
-        <option value="rating-desc">Sort: Rating ↓</option>
+        <option value="scoreGr-desc">Sort: Goodreads ↓</option>
       </select>
     </div>
 
@@ -436,20 +494,13 @@ main { padding: 24px 32px; }
       <select id="statusFilter">
         <option value="">All Status</option>
         <option value="read">Read</option>
-        <option value="reading">Reading</option>
         <option value="want-to-read">Want to Read</option>
       </select>
     </div>
 
-    <div class="select-wrap" id="tagWrap" style="display:none">
-      <select id="tagFilter">
-        <option value="">All Tags</option>
-      </select>
-    </div>
-
-    <div class="select-wrap" id="catWrap" style="display:none">
-      <select id="catFilter">
-        <option value="">All Categories</option>
+    <div class="select-wrap" id="genreWrap" style="display:none">
+      <select id="genreFilter">
+        <option value="">All Genres</option>
       </select>
     </div>
 
@@ -486,35 +537,26 @@ let state = {
   query: "",
   sort: "title",
   status: "",
-  tag: "",
-  cat: "",
+  genre: "",
 };
 
 // ── Boot ──
 function init() {
   document.getElementById('updated').textContent = 'Generated ' + GENERATED;
 
-  // Populate tag/category dropdowns
-  const allTags = [...new Set(BOOKS.flatMap(b => b.tags))].sort();
-  const allCats = [...new Set(BOOKS.flatMap(b => b.categories))].sort();
-
-  if (allTags.length) {
-    const sel = document.getElementById('tagFilter');
-    allTags.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; sel.appendChild(o); });
-    document.getElementById('tagWrap').style.display = '';
-  }
-  if (allCats.length) {
-    const sel = document.getElementById('catFilter');
-    allCats.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
-    document.getElementById('catWrap').style.display = '';
+  // Populate genre dropdown
+  const allGenres = [...new Set(BOOKS.flatMap(b => b.genre))].sort();
+  if (allGenres.length) {
+    const sel = document.getElementById('genreFilter');
+    allGenres.forEach(g => { const o = document.createElement('option'); o.value = g; o.textContent = g; sel.appendChild(o); });
+    document.getElementById('genreWrap').style.display = '';
   }
 
   // Events
   document.getElementById('search').addEventListener('input', e => { state.query = e.target.value; render(); });
   document.getElementById('sortSelect').addEventListener('change', e => { state.sort = e.target.value; render(); });
   document.getElementById('statusFilter').addEventListener('change', e => { state.status = e.target.value; render(); });
-  document.getElementById('tagFilter').addEventListener('change', e => { state.tag = e.target.value; render(); });
-  document.getElementById('catFilter').addEventListener('change', e => { state.cat = e.target.value; render(); });
+  document.getElementById('genreFilter').addEventListener('change', e => { state.genre = e.target.value; render(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDirect(); if (e.key === '/' && !document.getElementById('modalOverlay').classList.contains('open')) { e.preventDefault(); document.getElementById('search').focus(); } });
 
   render();
@@ -527,10 +569,9 @@ function filtered() {
     if (q && !( b.title.toLowerCase().includes(q) || b.authors.join(' ').toLowerCase().includes(q) || b.description.toLowerCase().includes(q) )) return false;
     if (state.status) {
       const s = (b.status || '').toLowerCase().replace(/[\s_]+/g, '-');
-      if (!s.includes(state.status.replace(/[\s_]+/g, '-'))) return false;
+      if (s !== state.status.replace(/[\s_]+/g, '-')) return false;
     }
-    if (state.tag && !b.tags.includes(state.tag)) return false;
-    if (state.cat && !b.categories.includes(state.cat)) return false;
+    if (state.genre && !b.genre.includes(state.genre)) return false;
     return true;
   }).sort((a, b) => {
     switch (state.sort) {
@@ -538,7 +579,7 @@ function filtered() {
       case 'year-desc': return (parseInt(b.year)||0) - (parseInt(a.year)||0);
       case 'year-asc':  return (parseInt(a.year)||0) - (parseInt(b.year)||0);
       case 'pages-desc':return (parseInt(b.pages)||0) - (parseInt(a.pages)||0);
-      case 'rating-desc':return (parseFloat(b.rating)||0) - (parseFloat(a.rating)||0);
+      case 'scoreGr-desc':return (parseFloat(b.scoreGr)||0) - (parseFloat(a.scoreGr)||0);
       default:          return a.title.localeCompare(b.title);
     }
   });
@@ -552,7 +593,7 @@ function render() {
   const badge = document.getElementById('countBadge');
   const clearBtn = document.getElementById('clearBtn');
 
-  const hasFilter = state.query || state.status || state.tag || state.cat;
+  const hasFilter = state.query || state.status || state.genre;
   clearBtn.style.display = hasFilter ? '' : 'none';
 
   badge.textContent = books.length + (books.length === 1 ? ' result' : ' results');
@@ -578,18 +619,17 @@ function coverHTML(b, size = 'full') {
 function statusDot(status) {
   if (!status) return '';
   const s = status.toLowerCase().replace(/[\s_]+/g, '-');
-  if (s.includes('read') && !s.includes('want') && !s.includes('reading')) return '<span class="status-dot read" title="Read"></span>';
-  if (s.includes('reading')) return '<span class="status-dot reading" title="Currently Reading"></span>';
-  if (s.includes('want')) return '<span class="status-dot want" title="Want to Read"></span>';
+  if (s === 'read') return '<span class="status-dot read" title="Read"></span>';
+  if (s === 'reading') return '<span class="status-dot reading" title="Currently Reading"></span>';
+  if (s === 'want-to-read') return '<span class="status-dot want" title="Want to Read"></span>';
   return '';
 }
 
-function stars(rating) {
-  if (!rating) return '';
-  const n = parseFloat(rating);
+function stars(scoreGr, rating) {
+  const n = parseFloat(scoreGr || rating);
   if (isNaN(n)) return '';
   const full = Math.floor(n), half = n % 1 >= 0.5;
-  return '<div class="rating-stars">' + '★'.repeat(full) + (half ? '½' : '') + '</div>';
+  return '<div class="rating-stars" title="Goodreads ' + n + '">' + '★'.repeat(full) + (half ? '½' : '') + '</div>';
 }
 
 function cardHTML(b, i) {
@@ -603,7 +643,7 @@ function cardHTML(b, i) {
       <div class="card-title">${escHtml(b.title)}</div>
       ${b.authors.length ? `<div class="card-authors">${escHtml(b.authors.join(', '))}</div>` : ''}
       ${meta ? `<div class="card-meta">${escHtml(meta)}</div>` : ''}
-      ${stars(b.rating)}
+      ${stars(b.scoreGr, b.rating)}
     </div>
   </div>`;
 }
@@ -616,7 +656,7 @@ function openModal(id) {
     b.year  ? ['Year', b.year] : null,
     b.pages ? ['Pages', b.pages] : null,
     b.status ? ['Status', b.status] : null,
-    b.rating ? ['Rating', b.rating + ' / 5'] : null,
+    b.scoreGr ? ['Goodreads', b.scoreGr + ' / 5'] : null,
   ].filter(Boolean);
 
   document.getElementById('modalInner').innerHTML = `
@@ -625,7 +665,7 @@ function openModal(id) {
       <div class="modal-title">${escHtml(b.title)}</div>
       ${b.authors.length ? `<div class="modal-authors">${escHtml(b.authors.join(', '))}</div>` : ''}
       ${meta.length ? `<div class="modal-meta-grid">${meta.map(([l,v]) => `<span class="meta-label">${escHtml(l)}</span><span class="meta-value">${escHtml(v)}</span>`).join('')}</div>` : ''}
-      ${(b.tags.length||b.categories.length) ? `<div class="tag-list" style="margin-bottom:10px">${[...b.tags,...b.categories].map(t=>`<span class="tag">${escHtml(t)}</span>`).join('')}</div>` : ''}
+      ${b.genre.length ? `<div class="tag-list" style="margin-bottom:10px">${b.genre.map(t=>`<span class="tag">${escHtml(t)}</span>`).join('')}</div>` : ''}
       ${b.description ? `<div class="modal-desc">${escHtml(b.description)}</div>` : ''}
     </div>`;
   document.getElementById('modalOverlay').classList.add('open');
@@ -641,11 +681,10 @@ function closeModalDirect() {
 }
 
 function clearFilters() {
-  state = {...state, query: '', status: '', tag: '', cat: ''};
+  state = {...state, query: '', status: '', genre: ''};
   document.getElementById('search').value = '';
   document.getElementById('statusFilter').value = '';
-  document.getElementById('tagFilter').value = '';
-  document.getElementById('catFilter').value = '';
+  document.getElementById('genreFilter').value = '';
   render();
 }
 
