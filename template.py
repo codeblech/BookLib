@@ -538,6 +538,7 @@ function init() {
     document.getElementById('genreWrap').style.display = '';
   }
 
+  document.getElementById('grid').addEventListener('click', e => { const card = e.target.closest('.card'); if (card) openDetail(card.dataset.id); });
   document.getElementById('search').addEventListener('input', e => { state.query=e.target.value; render(); });
   document.getElementById('sortSelect').addEventListener('change', e => { state.sort=e.target.value; render(); });
   document.getElementById('statusFilter').addEventListener('change', e => { state.status=e.target.value; render(); });
@@ -614,7 +615,7 @@ function starsSmall(scoreGr, rating) {
 function cardHTML(b, i) {
   const meta = [b.year, b.pages?b.pages+' pp':''].filter(Boolean).join(' · ');
   const hasLinks = b.telegram && b.telegram.length>0;
-  return `<div class="card" onclick="openDetail(${JSON.stringify(b.id)})" style="animation-delay:${Math.min(i*11,280)}ms">
+  return `<div class="card" data-id="${esc(b.id)}" style="animation-delay:${Math.min(i*11,280)}ms">
     <div class="cover-wrap${hasLinks?' has-links':''}">
       ${coverInner(b)}${statusDot(b.status)}
     </div>
